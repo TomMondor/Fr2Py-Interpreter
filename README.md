@@ -44,7 +44,8 @@ Main characteristics :
 
 Possible future characteristics :
 
--   other assignment-like operators include : `+= -= /= *= `
+-   operator precedence (currently there is no precedence, only left to right evaluation), by operator type and/or with parenthesis
+-   other assignment-like operators including : `+= -= /= *= `
 -   inline if statement : `x = 3 si y < 2 sinon 4`
 -   `vrai` and `faux`, the `true` and `false` keywords
 -   classes or structs
