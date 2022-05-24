@@ -44,6 +44,8 @@ Main characteristics :
 
 Possible future characteristics :
 
+-   loop statements (`for`, `while`, etc.)
+-   data structures (lists/arrays, dictonaries, etc.)
 -   other assignment-like operators include : `+= -= /= *= `
 -   inline if statement : `x = 3 si y < 2 sinon 4`
 -   `vrai` and `faux`, the `true` and `false` keywords
