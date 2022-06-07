@@ -11,19 +11,22 @@ class Tokenizer:
     def __init__(self, input_string : str):
         self.raw_program = input_string
         self.current_line = ""
-        self.tokenized_program : list[Token] = []
+        self.tokenized_program : list[list[Token]] = [[]]
 
     def __str__(self):
         output = "\n"
-        for token in self.tokenized_program:
-            output += str(token)
-            output += " " if token.type != TokenType.EOL else "\n"
+        for line in self.tokenized_program:
+            for token in line:
+                output += str(token)
+                output += " "
+            output += "\n"
         return output
 
     def print_brief(self):
-        for token in self.tokenized_program:
-            end_char = " " if token.type != TokenType.EOL else "\n"
-            print(token.type.name + ":" + token.value, end=end_char)
+        for line in self.tokenized_program:
+            for token in line:
+                print(token.type.name + ":" + token.value, end=" ")
+            print("\n")
 
     def tokenize(self):
         lines = self.raw_program.split('\n')
@@ -34,7 +37,7 @@ class Tokenizer:
                     self.append(raw_token)
                 else:
                     self.parse_raw_token(raw_token, line_nbr)
-            self.append(Token(line_nbr, TokenType.EOL, "\\n"))
+            self.end_program_line()
         self.append(Token(len(lines), TokenType.EOF, "EOF"))
         return self.tokenized_program
 
@@ -70,10 +73,16 @@ class Tokenizer:
         return re.fullmatch(r"^-?(([0-9]+\.?[0-9]+)|([0-9]+))$", value)
 
     def append(self, token : Token) -> None:
-        self.tokenized_program.append(token)
+        self.tokenized_program[-1].append(token)
+
+    def end_program_line(self) -> None:
+        if self.tokenized_program[-1] != []:
+            self.tokenized_program.append([])
 
     def get_identifier_type(self, raw_token : str) -> TokenType:
-        if self.tokenized_program[-1].type == TokenType.FUNCTION:
+        if len(self.tokenized_program[-1]) == 0:
+            return TokenType.VARIABLE_NAME
+        if self.tokenized_program[-1][-1].type == TokenType.FUNCTION:
             return TokenType.FUNCTION_NAME
         else:
             return TokenType.VARIABLE_NAME
