@@ -64,8 +64,9 @@ class ReturnStatement(AST_Node):
         self.expression = expression
 
 class FunctionDefinition(AST_Node):
-    def __init__(self, function : Token, params : list[Variable], body : Block): #TODO verif
+    def __init__(self, function : Token, params : list[Variable], body : Block, return_statement : ReturnStatement):
         self.function = function
         self.function_name = function.value
         self.params = params
         self.body = body
+        self.return_statement = return_statement
