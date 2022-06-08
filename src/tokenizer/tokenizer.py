@@ -32,22 +32,23 @@ class Tokenizer:
         lines = self.raw_program.split('\n')
         for line_nbr, line in enumerate(lines):
             raw_tokens = self.evaluate_strings_and_comments(line, line_nbr)
-            for raw_token in raw_tokens:
+            for index, raw_token in enumerate(raw_tokens):
                 if isinstance(raw_token, Token):
                     self.append(raw_token)
                 else:
-                    self.parse_raw_token(raw_token, line_nbr)
+                    next_raw_token = raw_tokens[index + 1] if (index + 1) < len(raw_tokens) else ""
+                    self.parse_raw_token(raw_token, line_nbr, next_raw_token)
             self.end_program_line()
         self.append(Token(len(lines), TokenType.EOF, "EOF"))
         return self.tokenized_program
 
-    def parse_raw_token(self, raw_token : str, line_nbr : int):
+    def parse_raw_token(self, raw_token : str, line_nbr : int, next_raw_token : str) -> None:
         if TokenType.is_valid_token_type(raw_token):
             tokenType = TokenType.get_token_type_from_value(raw_token)
             self.append(Token(line_nbr, tokenType, raw_token))
             return
         elif self.is_valid_identifier(raw_token): 
-            tokenType = self.get_identifier_type(raw_token)
+            tokenType = self.get_identifier_type(raw_token, next_raw_token)
             self.append(Token(line_nbr, tokenType, raw_token))
             return
         elif self.is_valid_number(raw_token):
@@ -58,12 +59,11 @@ class Tokenizer:
                 index = raw_token.find(possible_token)
                 if index != -1:
                     before, token, after = raw_token.partition(possible_token)
-                    self.parse_raw_token(before, line_nbr) if (before != "") else None
+                    self.parse_raw_token(before, line_nbr, token) if (before != "") else None
                     self.append(Token(line_nbr, TokenType.get_token_type_from_value(token), token))
-                    self.parse_raw_token(after, line_nbr) if (after != "") else None
+                    self.parse_raw_token(after, line_nbr, token) if (after != "") else None
                     return
-                    return
-            #si ne match rien
+            #if nothing matches
             raise TokenTypeException(raw_token, line_nbr)
 
     def is_valid_identifier(self, value : str) -> bool:
@@ -79,10 +79,10 @@ class Tokenizer:
         if self.tokenized_program[-1] != []:
             self.tokenized_program.append([])
 
-    def get_identifier_type(self, raw_token : str) -> TokenType:
-        if len(self.tokenized_program[-1]) == 0:
-            return TokenType.VARIABLE_NAME
-        if self.tokenized_program[-1][-1].type == TokenType.FUNCTION:
+    def get_identifier_type(self, raw_token : str, next_raw_token : str) -> TokenType:
+        if len(self.tokenized_program[-1]) > 0 and self.tokenized_program[-1][-1].type == TokenType.FUNCTION:
+            return TokenType.FUNCTION_NAME
+        elif isinstance(next_raw_token, str) and next_raw_token.startswith("("):
             return TokenType.FUNCTION_NAME
         else:
             return TokenType.VARIABLE_NAME
