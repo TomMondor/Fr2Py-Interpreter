@@ -88,8 +88,8 @@ class TokenType(enum.Enum):
 
     @classmethod
     def get_logical_operators_values(cls):
-        return [token for token in cls if token.value in ['>=', '>', '<=', '<', '=', 'pas=', 'pas', 'ou', 'et']]
+        return [token.values for token in cls if token.value in ['>=', '>', '<=', '<', '=', 'pas=', 'pas', 'ou', 'et']]
 
     @classmethod
     def get_arithmetic_operators_values(cls):
-        return [token for token in cls if token.value in ['+', '-', '*', '/', '^']]
+        return [token.values for token in cls if token.value in ['+', '-', '*', '/', '^']]
