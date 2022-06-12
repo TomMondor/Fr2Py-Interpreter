@@ -79,9 +79,9 @@ class TokenType(enum.Enum):
         return cls.get_token_type_from_value(value) != TokenType.NOT_A_TOKEN
 
     @classmethod
-    def get_non_litteral_tokens(cls):
+    def get_non_literal_tokens(cls):
         return [token for token in cls if token.value not in ['\n', 'EOF', 'texte', 'nombre', 'vrai-ou-faux', 'FUNCTION_NAME', 'VARIABLE_NAME', 'NOT_A_TOKEN']]
 
     @classmethod
-    def get_non_litteral_tokens_values(cls):
-        return [token.value for token in cls.get_non_litteral_tokens()]
+    def get_non_literal_tokens_values(cls):
+        return [token.value for token in cls.get_non_literal_tokens()]

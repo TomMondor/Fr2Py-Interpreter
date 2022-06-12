@@ -1,7 +1,7 @@
 import re
 from typing import Union
 from tokenizer.tokens import *
-from tokenizer.token_type_exception import TokenTypeException
+from tokenizer.token_type_exception import TokenTypeException, StringLiteralException
 
 
 class Tokenizer:
@@ -55,7 +55,7 @@ class Tokenizer:
             self.append(Token(line_nbr, TokenType.NUMBER, raw_token))
             return
         else:
-            for possible_token in TokenType.get_non_litteral_tokens_values():
+            for possible_token in TokenType.get_non_literal_tokens_values():
                 index = raw_token.find(possible_token)
                 if index != -1:
                     before, token, after = raw_token.partition(possible_token)
@@ -67,7 +67,7 @@ class Tokenizer:
             raise TokenTypeException(raw_token, line_nbr)
 
     def is_valid_identifier(self, value : str) -> bool:
-        return re.fullmatch(r"^[a-zA-Z_][a-zA-Z0-9_]*$", value) and value not in TokenType.get_non_litteral_tokens_values()
+        return re.fullmatch(r"^[a-zA-Z_][a-zA-Z0-9_]*$", value) and value not in TokenType.get_non_literal_tokens_values()
 
     def is_valid_number(self, value : str) -> bool:
         return re.fullmatch(r"^-?(([0-9]+\.?[0-9]+)|([0-9]+))$", value)
@@ -95,7 +95,7 @@ class Tokenizer:
             line_nbr (int): line number.
 
         Raises:
-            StringLitteralException: If there is an incomplete string in the line (missing a closing quote).
+            StringLiteralException: If there is an incomplete string in the line (missing a closing quote).
 
         Returns:
             list[Union[str, Token]]: List of raw tokens (strings) and STRING tokens.
@@ -110,7 +110,7 @@ class Tokenizer:
             if quote == '"':
                 in_string, quote, after = after.partition('"')
                 if quote != '"':
-                    raise StringLitteralException(in_string, line_nbr)
+                    raise StringLiteralException(in_string, line_nbr)
                 tokens.append(Token(line_nbr, TokenType.STRING, in_string))
             line = after
         return tokens

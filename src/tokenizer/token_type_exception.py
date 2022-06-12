@@ -6,10 +6,10 @@ class TokenTypeException(Exception):
     def __str__(self):
         return f"TokenTypeException: No token matching string '{self.value}' at line {self.line_nbr}"
 
-class StringLitteralException(TokenTypeException):
+class StringLiteralException(TokenTypeException):
     def __init__(self, invalid_string : str, line_nbr : int):
         self.invalid_string = invalid_string
         self.line_nbr = line_nbr
 
     def __str__(self):
-        return f"""StringLitteralException: Invalid string litteral "{self.invalid_string}" at line {self.line_nbr}"""
+        return f"""StringLiteralException: Invalid string literal "{self.invalid_string}" at line {self.line_nbr}"""
