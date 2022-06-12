@@ -60,8 +60,11 @@ class FunctionCall(AST_Node):
         self.args = args
 
 class ReturnStatement(AST_Node):
-    def __init__(self, expression : Expression):
+    def __init__(self, expression : Union[Expression, None]):
         self.expression = expression
+
+    def returns_nothing(self):
+        return self.expression is None
 
 class FunctionDefinition(AST_Node):
     def __init__(self, function : Token, params : list[Expression], body : Block, return_statement : ReturnStatement):
