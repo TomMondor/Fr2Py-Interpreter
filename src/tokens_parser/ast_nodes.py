@@ -36,7 +36,7 @@ class Variable(AST_Node):
         self.token = token
 
 class Assignment(AST_Node):
-    def __init__(self, var : Variable, right : Expression):
+    def __init__(self, left : Variable, right : Expression):
         self.left = left
         self.right = right
 
@@ -64,7 +64,7 @@ class ReturnStatement(AST_Node):
         self.expression = expression
 
 class FunctionDefinition(AST_Node):
-    def __init__(self, function : Token, params : list[Variable], body : Block, return_statement : ReturnStatement):
+    def __init__(self, function : Token, params : list[Expression], body : Block, return_statement : ReturnStatement):
         self.function = function
         self.function_name = function.value
         self.params = params
