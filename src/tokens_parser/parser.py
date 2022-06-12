@@ -79,9 +79,8 @@ class Parser:
         then_block = Block([])
         has_else_block = False
         else_block = Block([])
-        line = [Token(-1, TokenType.NOT_A_TOKEN)]
+        line, line_nbr = self.eat_program_line()
         while line[0].type != TokenType.END_IF:
-            line, line_nbr = self.eat_program_line()
             if line[0].type == TokenType.ELSE:
                 if len(line) != 1:
                     raise InvalidSyntaxException(line, line_nbr)
@@ -90,6 +89,7 @@ class Parser:
             else:
                 parsed_line = self.parse_program_line(line, line_nbr)
                 then_block.append(parsed_line) if not has_else_block else else_block.append(parsed_line)
+            line, line_nbr = self.eat_program_line()
 
         # when while ends
         if len(line) != 1:
@@ -97,14 +97,39 @@ class Parser:
         return IfStatement(condition, then_block, else_block)
 
     def parse_function_definition(self, program_line : list[Token]) -> FunctionDefinition:
-        pass #TODO à implémenter
-        # lines = []
-        # #lines += eat_program_line() jusqu'à rencontrer un "retourne"
-        # params = [] # de la "(" à la ")", appeler parse_expression() entre chaque virgule
-        # body = Block([]) #à remplir en appelant parse_program_line() pour chq ligne entre la ")" et le "retourne"
-        # return_statement_tokens : list[Token] = [] #à déterminer
-        # return_statement = ReturnStatement(self.parse_expression(return_statement_tokens))
-        # return FunctionDefinition(program_line[1], params, body, return_statement)
+        if len(program_line) < 4:
+            raise InvalidSyntaxException(program_line, program_line[0].line_nbr)
+
+        params = self.parse_function_parameters(program_line[2:])
+
+        body = Block([])
+        line, line_nbr = self.eat_program_line()
+        while line[0].type != TokenType.RETURN:
+            parsed_line = self.parse_program_line(line, line_nbr)
+            body.append(parsed_line)
+            line, line_nbr = self.eat_program_line()
+
+        return_statement = ReturnStatement(self.parse_expression(line[1:])) if len(line) > 1 else ReturnStatement(None)
+
+        return FunctionDefinition(program_line[1], params, body, return_statement)
+
+    def parse_function_parameters(self, tokens : list[Token]) -> list[Expression]:
+        """Can be used for function definition and function call"""
+        if len(tokens) < 2:
+            raise InvalidSyntaxException(tokens, tokens[0].line_nbr)
+        if tokens[0].type != TokenType.LEFT_PAREN or tokens[-1].type != TokenType.RIGHT_PAREN:
+            raise InvalidSyntaxException(tokens, tokens[0].line_nbr)
+
+        parameters = [[]]
+        for token in tokens[1:-1]:
+            if token.type == TokenType.COMMA:
+                parameters.append([])
+            else:
+                parameters[-1].append(token)
+        if len(parameters) > 1 and [] in parameters:
+            raise InvalidSyntaxException(tokens, tokens[0].line_nbr)
+
+        return [self.parse_expression(parameter) for parameter in parameters]
 
     def parse_expression(self, tokens : list[Token]) -> Expression:
         pass #TODO à implémenter
