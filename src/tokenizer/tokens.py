@@ -16,8 +16,6 @@ class Token:
 
 class TokenType(enum.Enum):
     # Keywords.
-    PRINT = 'affiche'
-    INPUT = 'demande'
     RETURN = 'retourne'
     FUNCTION = 'fonction'
     ELSE = 'sinon'
