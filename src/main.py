@@ -22,7 +22,7 @@ sinon
     affiche(x, "is greater than 3")
 fin-si
 maVariable1 = 2 + 3 * 4 # ceci est un commentaire, this is a comment
-maVariable2 = maVariable1 >= 17 et pas= 17
+maVariable2 = maVariable1 >= 17 et maVariable1 pas= 17
 maVariable3 = 3 / 2 #maVariable3 = 1.5
 maVariable4 = "du texte..." + " some text"
 
@@ -31,7 +31,7 @@ fonction maFonction1(x, y, z)
 
 somme = maFonction1(1.5, b, 32)
 
-bug = maFonction1 "syntaxe invalide"
+#bug = maFonction1 "syntaxe invalide" #bel et bien détecté par le parser
 """
 
 the_tokenizer = Tokenizer(sample_code)
@@ -39,3 +39,4 @@ tokenized_program = the_tokenizer.tokenize()
 
 the_parser = Parser(tokenized_program)
 ast = the_parser.parse()
+print(str(ast))
