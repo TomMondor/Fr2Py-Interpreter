@@ -1,8 +1,10 @@
+from __future__ import annotations
 import enum
+from tokenizer.token_type_exception import InvalidOperatorException
 
 
 class Token:
-    def __init__(self, line_nbr : int, tokenType: 'TokenType', value: str = None):
+    def __init__(self, line_nbr : int, tokenType: TokenType, value: str = None):
         self.type = tokenType
         self.value = value
         self.line_nbr = line_nbr
@@ -12,6 +14,18 @@ class Token:
 
     def __repr__(self):
         return self.__str__()
+
+    def has_higher_precedence(self, other: Token):
+        if self.type.value not in TokenType.get_operators_values():
+            raise InvalidOperatorException(self.type.value, self.line_nbr)
+        if other.type.value not in TokenType.get_operators_values():
+            raise InvalidOperatorException(other.type.value, other.line_nbr)
+
+        precedences = TokenType.get_operators_precedence()
+        self_precedence = precedences[self.type.value]
+        other_precedence = precedences[other.type.value]
+        return self_precedence <= other_precedence
+
 
 
 class TokenType(enum.Enum):
@@ -86,8 +100,32 @@ class TokenType(enum.Enum):
 
     @classmethod
     def get_logical_operators_values(cls):
-        return [token.value for token in cls if token.value in ['>=', '>', '<=', '<', '=', 'pas=', 'pas', 'ou', 'et']]
+        return ['>=', '>', '<=', '<', '=', 'pas=', 'pas', 'ou', 'et']
 
     @classmethod
     def get_arithmetic_operators_values(cls):
-        return [token.value for token in cls if token.value in ['+', '-', '*', '/', '^']]
+        return ['+', '-', '*', '/', '^']
+
+    @classmethod
+    def get_operators_values(cls):
+        return cls.get_logical_operators_values() + cls.get_arithmetic_operators_values()
+
+    @classmethod
+    def get_operators_precedence(cls) -> dict:
+        """0 is the highest precedence."""
+        return {
+            'pas': 0,
+            '^': 1,
+            '*': 2,
+            '/': 2,
+            '+': 3,
+            '-': 3,
+            '>=': 4,
+            '>': 4,
+            '<=': 4,
+            '<': 4,
+            '=': 5,
+            'pas=': 5,
+            'ou': 6,
+            'et': 6
+        }
