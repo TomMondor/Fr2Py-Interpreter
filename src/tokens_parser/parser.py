@@ -21,8 +21,9 @@ class Parser:
         program_line, line_nbr = self.eat_program_line()
         while not self.is_parsing_finished():
             self.ast.append(self.parse_program_line(program_line, line_nbr))
-            print(program_line)
             program_line, line_nbr = self.eat_program_line()
+
+        return self.ast
 
     def eat_program_line(self) -> tuple[list[Token], int]:
         if self.line < len(self.tokenized_program):
@@ -71,7 +72,7 @@ class Parser:
         return Assignment(variable, expression)
 
     def parse_if_block(self, program_line : list[Token]) -> IfStatement:
-        condition = self.parse_logical_expression(program_line[1:])
+        condition = self.parse_expression(program_line[1:])
         then_line, line_nbr = self.eat_program_line()
         if len(then_line) != 1 or then_line[0].type != TokenType.THEN:
             raise InvalidSyntaxException(then_line, line_nbr)
@@ -85,7 +86,6 @@ class Parser:
                 if len(line) != 1:
                     raise InvalidSyntaxException(line, line_nbr)
                 has_else_block = True
-                continue
             else:
                 parsed_line = self.parse_program_line(line, line_nbr)
                 then_block.append(parsed_line) if not has_else_block else else_block.append(parsed_line)
@@ -131,16 +131,152 @@ class Parser:
 
         return [self.parse_expression(parameter) for parameter in parameters]
 
-    def parse_expression(self, tokens : list[Token]) -> Expression:
-        pass #TODO à implémenter
-        # appeler parse_function_call, parse_logical_expression, parse_math_expression
-        # ou créer une Variable, Number ou String
-
     def parse_function_call(self, tokens : list[Token]) -> FunctionCall:
-        pass #TODO à implémenter
+        if len(tokens) < 3:
+            raise InvalidSyntaxException(tokens, tokens[0].line_nbr)
+        if tokens[0].type != TokenType.FUNCTION_NAME:
+            raise InvalidSyntaxException(tokens, tokens[0].line_nbr)
 
-    def parse_logical_expression(self, tokens : list[Token]) -> BinaryOperation:
-        pass #TODO à implémenter
+        function_name = tokens[0]
+        parameters = self.parse_function_parameters(tokens[1:])
+        return FunctionCall(function_name, parameters)
 
-    def parse_math_expression(self, tokens : list[Token]) -> BinaryOperation:
-        pass #TODO à implémenter
+    def parse_expression(self, tokens : list[Token]) -> Expression:
+        token_types = [token.type for token in tokens]
+        if token_types.count(TokenType.LEFT_PAREN) != token_types.count(TokenType.RIGHT_PAREN):
+            raise InvalidSyntaxException(tokens, tokens[0].line_nbr)
+
+        if len(tokens) == 1:
+            return self.parse_single_token_expression(tokens[0])
+        else:
+            return self.parse_multi_tokens_expression(tokens)
+
+    def parse_single_token_expression(self, token : Token) -> Expression:
+        """Used internally by parse_expression()"""
+        if token.type == TokenType.VARIABLE_NAME:
+            return Variable(token)
+        elif token.type == TokenType.NUMBER:
+            return Number(token)
+        elif token.type == TokenType.STRING:
+            return String(token)
+        else:
+            raise InvalidSyntaxException(tokens, token.line_nbr)
+
+    def parse_multi_tokens_expression(self, tokens : list[Token]) -> Expression:
+        """Used internally by parse_expression()"""
+        in_parsing_expression = tokens
+        while TokenType.LEFT_PAREN in [token.type for token in in_parsing_expression if isinstance(token, Token)]:
+            last_left_paren_encontered = None
+            for index, token in enumerate(tokens):
+                if token.type == TokenType.LEFT_PAREN:
+                    last_left_paren_encontered = index
+                elif token.type == TokenType.RIGHT_PAREN:
+                    if last_left_paren_encontered is None:
+                        raise InvalidSyntaxException(tokens, token.line_nbr)
+                    in_between_paren_tokens = tokens[last_left_paren_encontered + 1: index]
+                    parsed_expression = None
+                    if in_parsing_expression[last_left_paren_encontered - 1].type == TokenType.FUNCTION_NAME:
+                        parsed_expression = self.parse_function_call(tokens)
+                        in_parsing_expression = in_parsing_expression[:last_left_paren_encontered - 1] + [parsed_expression] + in_parsing_expression[index + 1:]
+                    else:
+                        parsed_expression = self.parse_parenthesis_less_expression(in_between_paren_tokens)
+                        in_parsing_expression = in_parsing_expression[:last_left_paren_encontered] + [parsed_expression] + in_parsing_expression[index + 1:]
+                    break
+
+        # no parenthesis left
+        return self.parse_parenthesis_less_expression(in_parsing_expression)
+
+
+    def parse_parenthesis_less_expression(self, tokens : list[Union[Token, AST_Node]]) -> Expression:
+        """Used internally by parse_multi_tokens_expression().
+            Requires 'tokens' to be a list of tokens or AST_Nodes without parenthesis.
+        """
+        tokens = self.parse_not_operators(tokens)
+        feeder = ExpressionFeeder(tokens)
+        while len(feeder) > 1:
+            while feeder.has_next_operation():
+                raw_left = feeder.eat_operand()
+                left = self.parse_single_token_expression(raw_left) if isinstance(raw_left, Token) else raw_left
+                operator = feeder.eat_operator()
+                next_op = feeder.peek_operator()
+                if next_op is None or operator.has_higher_precedence(next_op):
+                    raw_right = feeder.eat_operand()
+                    right = self.parse_single_token_expression(raw_right) if isinstance(raw_right, Token) else raw_right
+                    feeder.replace_operation(BinaryOperation(left, operator, right))
+                else:
+                    feeder.replace_element(left)
+                    feeder.replace_element(operator)
+            feeder.restart_looping()
+        
+        return feeder.get_expression()[0]
+
+
+    def parse_not_operators(self, tokens : list[Union[Token, AST_Node]]) -> list[Union[Token, AST_Node]]:
+        """Used internally by parse_parenthesis_less_expression()"""
+        parsed_expression = []
+        while len(tokens) > 0:
+            if isinstance(tokens[0], Token) and tokens[0].type == TokenType.NOT:
+                expression = self.parse_single_token_expression(tokens[1]) if isinstance(tokens[1], Token) else tokens[1]
+                parsed_expression.append(UnaryOperation(tokens[0], expression))
+                tokens = tokens[2:]
+            else:
+                parsed_expression.append(tokens[0])
+                tokens = tokens[1:]
+        return parsed_expression
+
+class ExpressionFeeder:
+    """Used to parse an expression, after parenthesis and unary operators have been parsed."""
+    def __init__(self, expression: list[Union[Token, AST_Node]]):
+        self.expression = expression
+        self.index = 0
+
+    def __len__(self):
+        return len(self.expression)
+
+    def restart_looping(self):
+        self.index = 0
+
+    def has_next_operation(self):
+        """Checks if there are at least 3 elements left (2 operands and an operator)"""
+        return (self.index + 2) < len(self.expression)
+
+    def eat_operand(self):
+        """Removes the next token from the expression and returns it. Throws if it is an operator."""
+        operand = self.expression[self.index]
+        if isinstance(operand, Token) and operand.value in TokenType.get_operators_values():
+            raise InvalidSyntaxException(self.expression, operand.line_nbr)
+        self.index += 1
+        return operand
+
+    def eat_operator(self):
+        """Removes the next token from the expression and returns it. Throws if it is an operand."""
+        operator = self.expression[self.index]
+        if not isinstance(operator, Token) or operator.value not in TokenType.get_operators_values():
+            raise InvalidSyntaxException(self.expression, operator.line_nbr)
+        self.index += 1
+        return operator
+
+    def peek_operator(self):
+        """Returns the next operator in the expression, without removing it from the expression.
+            Expects the expression to contain an operand before the next operator (peeks the second-next element).
+            Returns None if the end of the expression is reached."""
+        if self.index + 1 < len(self.expression):
+            operator = self.expression[self.index + 1]
+            if not isinstance(operator, Token) or operator.value not in TokenType.get_operators_values():
+                raise InvalidSyntaxException(self.expression, operator.line_nbr)
+            return operator
+        else:
+            return None
+
+    def replace_operation(self, operation: BinaryOperation):
+        """Replaces the 3 last elements in the expression with the given BinaryOperation node."""
+        self.expression = self.expression[:self.index - 3] + [operation] + self.expression[self.index:]
+        self.index -= 3
+
+    def replace_element(self, operand_or_operator: AST_Node):
+        """Replaces the last eaten element in the expression with the given AST_Node."""
+        self.expression = self.expression[:self.index - 1] + [operand_or_operator] + self.expression[self.index:]
+
+    def get_expression(self):
+        """Returns the expression as a list of AST_Nodes."""
+        return self.expression
