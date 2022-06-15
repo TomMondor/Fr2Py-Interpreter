@@ -13,3 +13,11 @@ class StringLiteralException(TokenTypeException):
 
     def __str__(self):
         return f"""StringLiteralException: Invalid string literal "{self.invalid_string}" at line {self.line_nbr}"""
+
+class InvalidOperatorException(TokenTypeException):
+    def __init__(self, invalid_operator : str, line_nbr : int):
+        self.invalid_operator = invalid_operator
+        self.line_nbr = line_nbr
+
+    def __str__(self):
+        return f"""InvalidOperatorException: Invalid operator "{self.invalid_operator}" at line {self.line_nbr}"""
