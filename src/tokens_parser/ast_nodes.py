@@ -108,7 +108,7 @@ class ReturnStatement(AST_Node):
         return f"""Node[return {str(self.expression)}]"""
 
 class FunctionDefinition(AST_Node):
-    def __init__(self, function : Token, params : list[Expression], body : Block, return_statement : ReturnStatement):
+    def __init__(self, function : Token, params : list[Variable], body : Block, return_statement : ReturnStatement):
         self.function = function
         self.function_name = function.value
         self.params = params
