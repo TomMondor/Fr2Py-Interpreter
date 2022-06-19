@@ -1,5 +1,6 @@
 from tokens_parser.ast_nodes import *
 from interpreter.invalid_identifier_exception import InvalidIdentifierException
+from interpreter.invalid_function_definition_exception import InvalidFunctionDefinitionException
 
 
 
@@ -20,11 +21,16 @@ class Storage:
         """
         if symbol in self.current_scope:
             return self.current_scope[symbol]
-        else: 
+        elif symbol in self.global_scope and isinstance(self.global_scope[symbol], AST_Node):
+            return self.global_scope[symbol]
+        else:
             raise InvalidIdentifierException(symbol, line_nbr)
 
     def store(self, symbol : str, value : Union[int, float, str, AST_Node]) -> None:
-        """Store a symbol's value in the current scope."""
+        """Store a symbol's value in the current scope.
+            Raises InvalidSyntaxException if trying to define a function in a scope other than the global scope."""
+        if len(self.parent_scopes) != 0 and isinstance(symbol, AST_Node):
+            raise InvalidFunctionDefinitionException(symbol.function_name, self.function.line_nbr)
         self.current_scope[symbol] = value
 
     def exit_scope(self) -> None:
@@ -36,13 +42,15 @@ class Storage:
             self.current_scope = self.current_scope[scope_name]
         
         self.current_scope.pop(exited_scope)
-        self.parent_scopes.removesuffix(" " + exited_scope)
+        self.parent_scopes = self.parent_scopes.removesuffix(exited_scope)
+        self.parent_scopes = self.parent_scopes.removesuffix(" ")
 
     def enter_scope(self, scope_name : str) -> None:
         """Enter a new scope.
             Args:
                 scope_name (str): the entered function's name
         """
+        scope_name = f"{scope_name}:scope"
         self.parent_scopes += " " if len(self.parent_scopes) > 0 else ""
         self.parent_scopes += scope_name
         self.current_scope[scope_name] = {}
