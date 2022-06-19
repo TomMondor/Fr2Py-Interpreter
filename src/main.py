@@ -15,9 +15,9 @@ sample_code = """
 a = "Hello World"
 b = 123.43
 #c = a + b # invalid operation
-affiche(a, "  wowwwww")
+affiche(a, "or Hello There")
 abc = "le caractère # est permis dans les strings" # et le caractère " est permis dans des commentaires
-x = demande("Quel est ton chiffre favori")
+x = demande("Quel est ton chiffre favori?")
 si x < 3
 alors
     affiche(x, "est plus petit que 3")
@@ -31,6 +31,18 @@ maVariable4 = "du texte..." + " some text"
 
 fonction maFonction1(x, y, z)
     retourne x + y + z
+
+fonction volume(x, y, z)
+    maFonction1(x, y, z)
+    retourne x * y * z
+
+fonction quelconque(x, y, z)
+    x = maFonction1(x, y, z)
+    y = volume(x, y, z)
+    retourne x / y
+
+qqch = quelconque(1, 2, 3)
+affiche("qqch = ", qqch)
 
 somme = maFonction1(1.5, b, 32)
 affiche("somme devrait être '156.93' et est :", somme)
