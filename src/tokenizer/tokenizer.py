@@ -1,4 +1,4 @@
-import re
+from utils.utils import is_valid_number, is_valid_identifier
 from typing import Union
 from tokenizer.tokens import *
 from tokenizer.token_type_exception import TokenTypeException, StringLiteralException
@@ -51,7 +51,7 @@ class Tokenizer:
             tokenType = self.get_identifier_type(raw_token, next_raw_token)
             self.append(Token(line_nbr, tokenType, raw_token))
             return
-        elif self.is_valid_number(raw_token):
+        elif is_valid_number(raw_token):
             self.append(Token(line_nbr, TokenType.NUMBER, raw_token))
             return
         else:
@@ -67,10 +67,7 @@ class Tokenizer:
             raise TokenTypeException(raw_token, line_nbr)
 
     def is_valid_identifier(self, value : str) -> bool:
-        return re.fullmatch(r"^[a-zA-Z_][a-zA-Z0-9_]*$", value) and value not in TokenType.get_non_literal_tokens_values()
-
-    def is_valid_number(self, value : str) -> bool:
-        return re.fullmatch(r"^-?(([0-9]+\.?[0-9]+)|([0-9]+))$", value)
+        return is_valid_identifier(value) and value not in TokenType.get_non_literal_tokens_values()
 
     def append(self, token : Token) -> None:
         self.tokenized_program[-1].append(token)
