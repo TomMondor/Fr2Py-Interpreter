@@ -4,6 +4,7 @@ from tokenizer.tokens import *
 from tokens_parser.ast_nodes import *
 from interpreter.invalid_identifier_exception import InvalidIdentifierException
 from interpreter.invalid_arguments_exception import InvalidArgumentsException
+from interpreter.invalid_operand_exception import InvalidOperandException, InvalidOperandsException
 from interpreter.storage import Storage
 
 
@@ -56,38 +57,49 @@ class Interpreter:
         self.storage.store(node.left.value, right_value)
 
     def walk_BinaryOperation(self, node):
-        if node.operator_value == TokenType.PLUS.value:
-            return self.walk(node.left) + self.walk(node.right)
-        elif node.operator_value == TokenType.MINUS.value:
-            return self.walk(node.left) - self.walk(node.right)
-        elif node.operator_value == TokenType.STAR.value:
-            return self.walk(node.left) * self.walk(node.right)
-        elif node.operator_value == TokenType.SLASH.value:
-            return self.walk(node.left) / self.walk(node.right)
-        elif node.operator_value == TokenType.EXPONENT.value:
-            return self.walk(node.left) ** self.walk(node.right)
-        elif node.operator_value == TokenType.EQUAL.value:
-            return self.walk(node.left) == self.walk(node.right)
-        elif node.operator_value == TokenType.NOT_EQUAL.value:
-            return self.walk(node.left) != self.walk(node.right)
-        elif node.operator_value == TokenType.LESS.value:
-            return self.walk(node.left) < self.walk(node.right)
-        elif node.operator_value == TokenType.LESS_EQUAL.value:
-            return self.walk(node.left) <= self.walk(node.right)
-        elif node.operator_value == TokenType.GREATER.value:
-            return self.walk(node.left) > self.walk(node.right)
-        elif node.operator_value == TokenType.GREATER_EQUAL.value:
-            return self.walk(node.left) >= self.walk(node.right)
-        elif node.operator_value == TokenType.AND.value:
-            return self.walk(node.left) and self.walk(node.right)
-        elif node.operator_value == TokenType.OR.value:
-            return self.walk(node.left) or self.walk(node.right)
-        else:
-            raise NotImplementedError(f'NotImplementedError : No method implemented for {node.operator_value} operator.')
+        try:
+            #operands must have same type
+            if node.operator_value == TokenType.PLUS.value:
+                return self.walk(node.left) + self.walk(node.right)
+            elif node.operator_value == TokenType.EQUAL.value:
+                return self.walk(node.left) == self.walk(node.right)
+            elif node.operator_value == TokenType.NOT_EQUAL.value:
+                return self.walk(node.left) != self.walk(node.right)
+            #operands must be numbers
+            elif node.operator_value == TokenType.MINUS.value:
+                return self.walk(node.left) - self.walk(node.right)
+            elif node.operator_value == TokenType.STAR.value:
+                return self.walk(node.left) * self.walk(node.right)
+            elif node.operator_value == TokenType.SLASH.value:
+                return self.walk(node.left) / self.walk(node.right)
+            elif node.operator_value == TokenType.EXPONENT.value:
+                return self.walk(node.left) ** self.walk(node.right)
+            elif node.operator_value == TokenType.LESS.value:
+                return self.walk(node.left) < self.walk(node.right)
+            elif node.operator_value == TokenType.LESS_EQUAL.value:
+                return self.walk(node.left) <= self.walk(node.right)
+            elif node.operator_value == TokenType.GREATER.value:
+                return self.walk(node.left) > self.walk(node.right)
+            elif node.operator_value == TokenType.GREATER_EQUAL.value:
+                return self.walk(node.left) >= self.walk(node.right)
+            #operands must be booleans
+            elif node.operator_value == TokenType.AND.value:
+                return self.walk(node.left) and self.walk(node.right)
+            elif node.operator_value == TokenType.OR.value:
+                return self.walk(node.left) or self.walk(node.right)
+            else:
+                raise NotImplementedError(f'NotImplementedError : No method implemented for {node.operator_value} operator.')
+        except TypeError:
+            raise InvalidOperandsException(node.left.value, node.operator_value, node.right.value, node.operator.line_nbr)
 
     def walk_UnaryOperation(self, node):
         if node.operator_value == TokenType.NOT.value:
-            return not self.walk(node.right)
+            try:
+                return not self.walk(node.right)
+            except:
+                raise InvalidOperandException(node.right.value, node.operator_value, node.operator.line_nbr)
+        else:
+            raise NotImplementedError(f'NotImplementedError : No method implemented for {node.operator_value} operator.')
 
     def walk_IfStatement(self, node):
         if self.walk(node.condition):
