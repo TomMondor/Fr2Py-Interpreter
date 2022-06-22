@@ -55,7 +55,7 @@ class Tokenizer:
             self.append(Token(line_nbr, TokenType.NUMBER, raw_token))
             return
         else:
-            for possible_token in TokenType.get_non_literal_tokens_values():
+            for possible_token in TokenType.get_non_textual_tokens_values():
                 index = raw_token.find(possible_token)
                 if index != -1:
                     before, token, after = raw_token.partition(possible_token)

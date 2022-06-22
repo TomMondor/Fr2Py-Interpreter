@@ -99,6 +99,10 @@ class TokenType(enum.Enum):
         return [token.value for token in cls.get_non_literal_tokens()]
 
     @classmethod
+    def get_non_textual_tokens_values(cls):
+        return ['>=', '>', '<=', '<', '=', '+', '-', '*', '/', '^', '(', ')', ',', '"', '#']
+
+    @classmethod
     def get_logical_operators_values(cls):
         return ['>=', '>', '<=', '<', '=', 'pas=', 'pas', 'ou', 'et']
 
