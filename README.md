@@ -27,18 +27,17 @@ fonction maFonction1(x, y, z)
 
 Main characteristics :
 
--   end-of-line matters. There can be only one statement per line and a statement must fit in a line. <!-- to confirm -->
+-   end-of-line matters. There can be only one statement per line and a statement must fit in a line.
 -   indentation doesn't matter. Use it to make the code easier to read.
 -   `demande` is the function to ask input from the console (like `input` in Python).
--   `affiche` is the function to print to the console. Its parameters are printed with a single whitespace in between them and a newline is added at the end. The character `\n` represents a newline.
--   `if` statements use the keyword `si` and don't require parenthesis. The code between `alors` and `sinon` is executed if the condition is true. The code between `sinon` and `fin-si` match the `else` clause of most languages.
--   functions are declared using the `fonction` keyword, followed by the function name, parameters in between parenthesis, statements and the `return` statement.
+-   `affiche` is the function to print to the console. Its parameters are printed with a single whitespace in between them and a newline is added at the end.
+-   `if` statements use the keyword `si` and don't require parenthesis. The code between `alors` and `sinon` is executed if the condition is true. The code between `sinon` and `fin-si` matches the `else` clause of most languages.
+-   functions are declared using the `fonction` keyword, followed by the function's name, parameters in between parenthesis, statements (0, 1 or many) and the `return` statement.
 -   function parameters are assigned by position and their number on function calls must match the function declaration.
 -   functions can only have one `return` statement (the last statement of the function). That statement starts with the keyword `retourne` and the expression or variable to return. Void functions can use the `retourne` keyword followed by a newline.
 -   variable types are dynamic (no need to specify the type on variable creation and the type can change during the variable's life). Variable types include : `texte` (strings), `nombre` (numbers, int or float) and `vrai-ou-faux` (boolean).
--   variable and function names can contain letters, numbers, underscore and hyphen, but must start with a letter.
--   in-line comments start with a `#` symbol and end at the end of the line.
--   operators must be separated from the variables or constants used.
+-   variable and function names can contain letters, numbers and underscores, but cannot start with a number.
+-   comments start with a `#` symbol and end at the end of the line.
 -   the existing mathematical operators are : `+ - * / ^`. The character `^` is for exponents.
 -   the existing logical operators are : `< > <= >= = et ou pas pas=`. The word `et` corresponds to `and`, `ou` to `or`, `pas` to `not` and `pas=` to `!=`. The character `=`, when used between `si` and `alors`, represents equality (`==` in most languages), while it is used for assignment everywhere else.
 
@@ -46,9 +45,8 @@ Possible future characteristics :
 
 -   loop statements (`for`, `while`, etc.)
 -   data structures (lists/arrays, dictonaries, etc.)
--   operator precedence (currently there is no precedence, only left to right evaluation), by operator type and/or with parenthesis
 -   other assignment-like operators including : `+= -= /= *= `
--   inline if statement : `x = 3 si y < 2 sinon 4`
+-   inline if statement : `x = 3 si y < 2 sinon 4` or `x = si y < 2 alors 3 sinon 4`
 -   `vrai` and `faux`, the `true` and `false` keywords
 -   classes or structs
 -   file i/o
@@ -67,6 +65,7 @@ Keywords :
 -   et
 -   ou
 -   pas
+-   pas=
 
 ---
 
