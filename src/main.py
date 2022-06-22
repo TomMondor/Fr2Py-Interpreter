@@ -16,7 +16,9 @@ a = "Hello World"
 b = 123.43
 #c = a + b # invalid operation
 affiche(a, "or Hello There")
-abc = "le caractère # est permis dans les strings" # et le caractère " est permis dans des commentaires
+_abc = 4+5*6/2 + 3^4 - 3*(2+3)
+affiche(_abc)
+_abc = "le caractère # est permis dans les strings" # et le caractère " est permis dans des commentaires
 x = demande("Quel est ton chiffre favori?")
 si x < 3
 alors
@@ -24,10 +26,21 @@ alors
 sinon
     affiche(x, "is greater than 3")
 fin-si
+si x = 3
+alors
+    affiche("J'adore 3 aussi!")
+fin-si
 maVariable1 = 2 + 3 * 4 # ceci est un commentaire, this is a comment
 maVariable2 = maVariable1 >= 17 et maVariable1 pas= 17
 maVariable3 = 3 / 2 #maVariable3 = 1.5
 maVariable4 = "du texte..." + " some text"
+
+_expression = 2 + 4 * 5 - 3 * (2 + 3)
+si _expression pas= 7
+alors
+    affiche(_expression, "devrait être égal à 7")
+    affiche("gros problème!!!!!")
+fin-si
 
 fonction maFonction1(x, y, z)
     retourne x + y + z
@@ -47,7 +60,12 @@ affiche("qqch = ", qqch)
 somme = maFonction1(1.5, b, 32)
 affiche("somme devrait être '156.93' et est :", somme)
 
-#bug = maFonction1 "syntaxe invalide" #bel et bien détecté par le parser
+#bel et bien détectés par le parser
+# bug = maFonction1 "syntaxe invalide"
+# bug = "syntaxe invalide" + 34
+# bug = "syntaxe invalide" * "syntaxe invalide"
+# bug = "syntaxe invalide" & "syntaxe invalide"
+# 3 = "syntaxe invalide"
 """
 
 tokenized_program = Tokenizer(sample_code).tokenize()
