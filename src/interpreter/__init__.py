@@ -1,4 +1,5 @@
 import interpreter.invalid_identifier_exception
 import interpreter.invalid_arguments_exception
 import interpreter.invalid_function_definition_exception
+import interpreter.invalid_operand_exception
 import interpreter.storage
