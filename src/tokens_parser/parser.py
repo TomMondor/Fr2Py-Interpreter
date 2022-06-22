@@ -160,7 +160,7 @@ class Parser:
         elif token.type == TokenType.STRING:
             return String(token)
         else:
-            raise InvalidSyntaxException(tokens, token.line_nbr)
+            raise InvalidSyntaxException([token], token.line_nbr)
 
     def parse_multi_tokens_expression(self, tokens : list[Token]) -> Expression:
         """Used internally by parse_expression()"""
