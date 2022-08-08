@@ -1,5 +1,5 @@
 <template>
-    <div class="console-output">ConsoleInput</div>
+    <div class="console-output">ConsoleOutput</div>
 </template>
 
 <script>
