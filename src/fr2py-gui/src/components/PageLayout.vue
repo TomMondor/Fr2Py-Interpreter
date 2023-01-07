@@ -39,6 +39,7 @@ export default {
 </script>
 
 <style scoped>
+/* TODO make layout responsive (move side-panel on mobile devices) */
 .page-layout {
     display: flex;
     flex-direction: row;
@@ -51,7 +52,7 @@ export default {
     justify-content: space-evenly;
     align-items: center;
     height: 100%;
-    width: 60vw;
+    width: 70vw;
 }
 
 .side-panel {
@@ -60,6 +61,6 @@ export default {
     justify-content: space-evenly;
     align-items: center;
     height: 100%;
-    width: 40vw;
+    width: 30vw;
 }
 </style>
