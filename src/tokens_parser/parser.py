@@ -193,7 +193,7 @@ class Parser:
         """
         tokens = self.parse_not_operators(tokens)
         feeder = ExpressionFeeder(tokens)
-        while len(feeder) > 1:
+        while feeder.has_operations_left():
             while feeder.has_next_operation():
                 raw_left = feeder.eat_operand()
                 left = self.parse_single_token_expression(raw_left) if isinstance(raw_left, Token) else raw_left
@@ -237,8 +237,14 @@ class ExpressionFeeder:
         self.index = 0
 
     def has_next_operation(self):
-        """Checks if there are at least 3 elements left (2 operands and an operator)"""
+        """Checks if there are at least 3 elements left (2 operands and an operator), starting from the current index"""
         return (self.index + 2) < len(self.expression)
+
+    def has_operations_left(self):
+        """Checks if there are at least 3 elements left (2 operands and an operator), starting from the beginning of the expression"""
+        if len(self.expression) == 2:
+            raise InvalidSyntaxException(self.expression, self.expression[0].line_nbr)
+        return len(self.expression) > 1
 
     def eat_operand(self):
         """Removes the next token from the expression and returns it. Throws if it is an operator."""
