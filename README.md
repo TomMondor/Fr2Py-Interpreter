@@ -6,7 +6,8 @@ French pseudo-code language interpreter in Python. The language is intended to b
 - [The interpreter](https://github.com/TomMondor/Fr2Py-Interpreter/wiki/The-interpreter)
 - [The UI](https://github.com/TomMondor/Fr2Py-Interpreter/wiki/The-UI)
 
-## How to use
+## Try it
+- Clone this repository
 - Write a Fr2Py script in a `txt` file (see the wiki for more information about the language), or use the provided `sample_Fr2Py_script.txt`
-- Run the `main` python script : `python <path-to-main>/main.py <path-to-txt>/<txt-file-name>.txt`
+- Run the `main` python script : `python <path-to-main>/main.py <path-to-txt>/<txt-file-name>.txt` (requires Python3, recommended: 3.10)
 - Use the command line to see the text output of your program and write the required text input
