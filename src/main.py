@@ -9,7 +9,7 @@ from interpreter.storage import Storage
 Main program
 Command line input asking for the file path containing the program to run.
 
-TODO: line numbers in the error messages might be wrong, because the tokenizing and parsing ignore blank lines.
+Note: line numbers in the error messages might be wrong, because the tokenizing and parsing ignore blank lines (oups).
 """
 
 def main():
