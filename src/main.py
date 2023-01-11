@@ -34,11 +34,15 @@ def read_file(path: str) -> str:
 
 
 def run(code: str):
-    tokenized_program = Tokenizer(code).tokenize()
+    try:
+        tokenized_program = Tokenizer(code).tokenize()
 
-    ast = Parser(tokenized_program).parse()
+        ast = Parser(tokenized_program).parse()
 
-    Interpreter(ast, Storage()).interpret()
+        Interpreter(ast, Storage()).interpret()
+    except Exception as error:
+        print(error)
+
 
 
 if __name__ == "__main__":
