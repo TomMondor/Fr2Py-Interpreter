@@ -22,12 +22,6 @@ class Tokenizer:
             output += "\n"
         return output
 
-    def print_brief(self):
-        for line in self.tokenized_program:
-            for token in line:
-                print(token.type.name + ":" + token.value, end=" ")
-            print("\n")
-
     def tokenize(self):
         lines = self.raw_program.split('\n')
         for line_nbr, line in enumerate(lines):
@@ -48,7 +42,7 @@ class Tokenizer:
             self.append(Token(line_nbr, tokenType, raw_token))
             return
         elif self.is_valid_identifier(raw_token): 
-            tokenType = self.get_identifier_type(raw_token, next_raw_token)
+            tokenType = self.get_identifier_type(next_raw_token)
             self.append(Token(line_nbr, tokenType, raw_token))
             return
         elif is_valid_number(raw_token):
@@ -76,7 +70,7 @@ class Tokenizer:
         if self.tokenized_program[-1] != []:
             self.tokenized_program.append([])
 
-    def get_identifier_type(self, raw_token : str, next_raw_token : str) -> TokenType:
+    def get_identifier_type(self, next_raw_token : str) -> TokenType:
         if len(self.tokenized_program[-1]) > 0 and self.tokenized_program[-1][-1].type == TokenType.FUNCTION:
             return TokenType.FUNCTION_NAME
         elif isinstance(next_raw_token, str) and next_raw_token.startswith("("):

@@ -1,5 +1,4 @@
 from tokenizer.tokens import *
-from tokenizer.token_type_exception import TokenTypeException
 from tokens_parser.ast_nodes import *
 from tokens_parser.invalid_syntax_exception import InvalidSyntaxException
 from tokens_parser.unexpected_eof_exception import UnexpectedEndOfFileException

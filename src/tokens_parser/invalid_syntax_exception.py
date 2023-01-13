@@ -9,7 +9,6 @@ class InvalidSyntaxException(Exception):
         self.line_nbr = line_nbr
 
     def __str__(self):
-        #TODO make debugging easier by passing the raw program and printing the raw line of code
         if isinstance(self.value, str):
             return f"InvalidSyntaxException: Invalid syntax '{self.value}' at line {self.line_nbr}"
         elif isinstance(self.value, list):
