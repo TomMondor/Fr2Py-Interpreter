@@ -55,10 +55,14 @@ affiche("qqch = ", qqch)
 somme = maFonction1(1.5, b, 32)
 affiche("somme devrait être '156.93' et est :", somme)
 
-# bel et bien détectés par le Parser (the following lines are invalid and throw an error) :
-# bug = 3 4
-# bug = maFonction1 "syntaxe invalide"
-# bug = "syntaxe invalide" + 34
-# bug = "syntaxe invalide" * "syntaxe invalide"
-# bug = "syntaxe invalide" & "syntaxe invalide"
-# 3 = "syntaxe invalide"
+# Erreurs bel et bien détectées (the following lines are invalid and throw an error) :
+# bug = buggy + 1                                   #undefined variable
+# bug = maFonction1 + 1                             #using a function identifier as a variable
+# bug = maFonction1(1, 2)                           #missing parameters in call
+# bug = x(1, 2, 3)                                  #using a variable as function name for a call
+# bug = 3 4                                         #missing operator
+# bug = maFonction1 "syntaxe invalide"              #missing operator
+# bug = "syntaxe invalide" + 34                     #operands mismatch
+# bug = "syntaxe invalide" * "syntaxe invalide"     #operands not allowed for operator
+# bug = "syntaxe invalide" & "syntaxe invalide"     #invalid symbol (detected by the tokenizer before parsing)
+# 3 = "syntaxe invalide"                            #invalid syntax (detected by the tokenizer before parsing)

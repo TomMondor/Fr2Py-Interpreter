@@ -118,9 +118,11 @@ class Interpreter:
             self.output_fct(output + "\n")
         else:
             function_node = self.storage.get(node.function_name, node.function.line_nbr)
+            if not isinstance(function_node, AST_Node):
+                raise InvalidIdentifierException(node.function_name, node.function.line_nbr)
             args = [self.walk(arg) for arg in node.args]
             self.storage.enter_scope(function_node.function_name)
-            self.assign_function_call_params(function_node.params, args)
+            self.assign_function_call_params(function_node.function_name, function_node.params, args)
             self.walk(function_node.body)
             return_value = self.walk(function_node.return_statement)
             self.storage.exit_scope()
@@ -132,7 +134,7 @@ class Interpreter:
     def walk_FunctionDefinition(self, node):
         self.storage.store(node.function_name, node)
 
-    def assign_function_call_params(self, params : list[Variable], args : list[Union[int, float, str]]):
+    def assign_function_call_params(self, name : str, params : list[Variable], args : list[Union[int, float, str]]):
         """Checks if given arguments match the declared parameters.
             If so, assigns args to variables (named as the parameters) in the function's scope.
 
@@ -141,6 +143,6 @@ class Interpreter:
                 args (list[Union[int, float, str]]): arguments of the function call
         """
         if len(params) != len(args):
-            raise InvalidArgumentsException
+            raise InvalidArgumentsException(name, len(args), len(params))
         for param, arg in zip(params, args):
             self.storage.store(param.value, arg)
