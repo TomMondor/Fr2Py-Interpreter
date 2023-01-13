@@ -5,6 +5,7 @@ French pseudo-code language interpreter in Python. The language is intended to b
 - [The language](https://github.com/TomMondor/Fr2Py-Interpreter/wiki/The-language)
 - [The interpreter](https://github.com/TomMondor/Fr2Py-Interpreter/wiki/The-interpreter)
 - [The UI](https://github.com/TomMondor/Fr2Py-Interpreter/wiki/The-UI)
+- [Some of the lessons learned and required improvements](https://github.com/TomMondor/Fr2Py-Interpreter/wiki/Mistakes,-possible-improvements-and-lessons-learned)
 
 ## Try it
 - Clone this repository
