@@ -1,8 +1,10 @@
 <template>
-    <div class="code-editor">CodeEditor</div>
+    <div class="code-editor">{{ translate("editor|title") }}</div>
 </template>
 
 <script>
+import { translate } from "../../assets/locales/localizationService";
+
 export default {
     name: "CodeEditor",
     props: {},
@@ -11,7 +13,7 @@ export default {
         return {};
     },
     mounted() {},
-    methods: {},
+    methods: { translate },
 };
 </script>
 
